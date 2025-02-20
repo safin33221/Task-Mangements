@@ -39,7 +39,7 @@ const SingIn = () => {
             <form onSubmit={handleSubmit(onsubmit)} >
                 <div className="max-w-xl mx-auto border shadow-2xl rounded-lg p-4">
                     <h1 className="text-3xl font-bold text-center py-5">SignIN Now!</h1>
-
+        
 
 
                     <label className="input input-bordered flex items-center gap-2 mb-4">

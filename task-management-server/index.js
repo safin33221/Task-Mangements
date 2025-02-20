@@ -29,6 +29,7 @@ async function run() {
 
         const db = client.db('Task-management')
         const userCollection = db.collection('users')
+        const taskCollection = db.collection('allTask')
 
 
         //-------------------------Manage User--------------------
@@ -39,6 +40,15 @@ async function run() {
             const isexist = await userCollection.findOne({ email })
             if (isexist) return res.status(404).send({ message: 'User Alreasy stroed in db' })
             const result = await userCollection.insertOne(data)
+            res.send(result)
+        })
+
+
+        //----------------------------Mange Task------------------------------------  
+
+        app.post('/task', async (req, res) => {
+            const data = req.body
+            const result = await taskCollection.insertOne(data)
             res.send(result)
         })
 
