@@ -18,6 +18,17 @@ const MyTask = () => {
         }
     });
 
+
+    const handleDelete = id => {
+        axios.delete(`http://localhost:5050/delete-task/${id}`)
+            .then(res => {
+                console.log(res.data);
+                refetch()
+            })
+    }
+
+
+    
     const columnsFromBackend = {
         todo: {
             name: 'To Do',
@@ -81,7 +92,6 @@ const MyTask = () => {
     };
 
     
-
     return (
         <div>
             <div>
