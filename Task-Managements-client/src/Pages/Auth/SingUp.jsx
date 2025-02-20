@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-
+import { LuLoaderPinwheel } from "react-icons/lu";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
@@ -18,11 +18,13 @@ const SingUp = () => {
 
     } = useForm()
     const onsubmit = async (data) => {
+        setLoading(true)
         try {
             const imgLink = await imageUpload(data.image[0])
             const result = await createUserWithEmail(data?.email, data?.password)
             await updateUserProfile(data?.name, imgLink)
             navigate('/')
+            setLoading(false)
         } catch (error) {
             console.log(error);
         }

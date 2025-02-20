@@ -1,9 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../Hooks/useAuth';
 
 const Navbar = () => {
-    const { user } = useAuth()
+    const { user, signOutUser } = useAuth()
+    const navigate = useNavigate()
+    const handleSingOut = () => {
+        signOutUser()
+            .then(() => {
+                navigate('/')
+            })
+    }
     return (
         <div className="navbar bg-base-100 px-16 mx-auto shadow-xl fixed top-0 w-full">
             <div className="flex-1">
@@ -33,7 +40,7 @@ const Navbar = () => {
                                 <div className="w-10 rounded-full">
                                     <img
                                         alt="Tailwind CSS Navbar component"
-                                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                        src={user?.photoURl} />
                                 </div>
                             </div>
                             <ul
@@ -46,7 +53,7 @@ const Navbar = () => {
                                     </a>
                                 </li>
                                 <li><a>Settings</a></li>
-                                <li><a>Logout</a></li>
+                                <li><button onClick={handleSingOut}>Logout</button></li>
                             </ul>
                         </div> : <div>
                             <Link to='/signUp'><button className="btn btn-xl rounded-full my-4">Get Start</button></Link>
