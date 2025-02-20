@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import useAuth from '../Hooks/useAuth';
 
 const Navbar = () => {
@@ -18,18 +18,11 @@ const Navbar = () => {
             </div>
             <div className="flex-none gap-2">
                 <div className="form-control">
-                    <ul className="menu menu-horizontal px-1">
-                        <li><a>Item 1</a></li>
-                        <li>
-                            <details>
-                                <summary>Parent</summary>
-                                <ul className="p-2">
-                                    <li><a>Submenu 1</a></li>
-                                    <li><a>Submenu 2</a></li>
-                                </ul>
-                            </details>
-                        </li>
-                        <li><a>Item 3</a></li>
+                    <ul className="menu menu-horizontal px-4 gap-3">
+                        <li><NavLink to='/'>Home</NavLink></li>
+                        {
+                            user && <li><NavLink to='/myTask'>My Task</NavLink></li>
+                        }
                     </ul>
                 </div>
                 <div className="dropdown dropdown-end">
@@ -56,7 +49,7 @@ const Navbar = () => {
                                 <li><button onClick={handleSingOut}>Logout</button></li>
                             </ul>
                         </div> : <div>
-                            <Link to='/signUp'><button className="btn btn-xl rounded-full my-4">Get Start</button></Link>
+                            <Link to='/signIn'><button className="btn btn-xl rounded-full my-4">Get Start</button></Link>
                         </div>
                     }
 

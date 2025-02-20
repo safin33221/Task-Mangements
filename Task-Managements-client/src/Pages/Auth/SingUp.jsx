@@ -23,7 +23,7 @@ const SingUp = () => {
             const imgLink = await imageUpload(data.image[0])
             const result = await createUserWithEmail(data?.email, data?.password)
             await updateUserProfile(data?.name, imgLink)
-            navigate('/')
+            navigate('/myTask')
             setLoading(false)
         } catch (error) {
             console.log(error);

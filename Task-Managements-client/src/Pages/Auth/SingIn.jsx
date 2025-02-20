@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
 import { LuLoaderPinwheel } from "react-icons/lu";
 const SingIn = () => {
-    const { signInUser } = useAuth()
+    const { signInUser, GoogleLogin } = useAuth()
     const [showPass, setShowPass] = useState(false)
     const [loading, setLoading] = useState(false)
     const { register, handleSubmit } = useForm()
@@ -14,7 +14,13 @@ const SingIn = () => {
         setLoading(true)
         signInUser(data.email, data.password)
             .then(res => {
-                navigate('/')
+                navigate('/myTask')
+            })
+    }
+    const handleGoogleSignIn = () => {
+        GoogleLogin()
+            .then(() => {
+                navigate('/myTask')
             })
     }
     return (
@@ -61,6 +67,14 @@ const SingIn = () => {
                         }</button>
                     </label>
                     <p>Already have an Account? <Link to='/signUp' className="text-blue-800">Sign In Now</Link></p>
+                    <button
+                        onClick={handleGoogleSignIn}
+                        className='btn my-4 mx-auto w-full'
+                    >
+                        <FaGoogle />
+
+                        <p>Continue with Google</p>
+                    </button>
                 </div>
             </form>
         </div>

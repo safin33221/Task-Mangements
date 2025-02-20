@@ -1,16 +1,21 @@
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateCurrentUser, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateCurrentUser, updateProfile } from 'firebase/auth';
 import React, { Children, createContext, useEffect, useState } from 'react';
 import { auth } from '../Firebase/firebase.config';
-import { set } from 'react-hook-form';
+
 
 export const authContext = createContext(null)
 
 const Authprovider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [user, setUser] = useState(null)
+    const googleProvider = new GoogleAuthProvider()
     const createUserWithEmail = (email, password) => {
         setLoading(true)
         return createUserWithEmailAndPassword(auth, email, password)
+    }
+    const GoogleLogin = () => {
+        setLoading(true)
+        return signInWithPopup(auth, googleProvider)
     }
 
     const updateUserProfile = (name, image) => {
@@ -41,7 +46,8 @@ const Authprovider = ({ children }) => {
         createUserWithEmail,
         updateUserProfile,
         signInUser,
-        signOutUser
+        signOutUser,
+        GoogleLogin
     }
     return (
         <authContext.Provider value={authVelue}>
