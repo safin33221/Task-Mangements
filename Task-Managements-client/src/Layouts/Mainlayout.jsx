@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import Navbar from "../Shared/Navbar";
 
 
@@ -5,10 +6,12 @@ const Mainlayout = () => {
     return (
         <div>
             <nav>
-                <Navbar/>
+                <Navbar />
             </nav>
-            <h1>main</h1>
-        <h1>footer</h1>
+            <main className="mt-20 px-20 mx-auto">
+                <Outlet />
+            </main>
+    
         </div>
     );
 };
