@@ -1,9 +1,12 @@
+import Navbar from "../Shared/Navbar";
 
 
 const Mainlayout = () => {
     return (
         <div>
-            <h1>nav</h1>
+            <nav>
+                <Navbar/>
+            </nav>
             <h1>main</h1>
         <h1>footer</h1>
         </div>
