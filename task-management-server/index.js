@@ -3,6 +3,12 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const port = process.env.PORT || 5050
+const http = require('http');
+const { Server } = require('socket.io');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+const server = http.createServer(app);
+const io = new Server(server);
 
 app.use(cors())
 app.use(express.json())
@@ -10,7 +16,6 @@ app.use(express.json())
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -42,13 +47,24 @@ async function run() {
             const result = await userCollection.insertOne(data)
             res.send(result)
         })
-
+        // MongoDB Change Stream
+        const changeStream = taskCollection.watch();
+        changeStream.on('change', (change) => {
+            console.log('Change detected:', change);
+            io.emit('taskChange', change);
+        });
 
         //----------------------------Mange Task------------------------------------  
 
         app.post('/task', async (req, res) => {
             const data = req.body
             const result = await taskCollection.insertOne(data)
+            res.send(result)
+        })
+
+        app.get('/task/:email', async (req, res) => {
+            const email = req.params.email
+            const result = await taskCollection.find({ email }).toArray()
             res.send(result)
         })
 
@@ -63,6 +79,13 @@ async function run() {
     }
 }
 run().catch(console.dir);
+
+io.on('connection', (socket) => {
+    console.log('New client connected');
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
 
 
 app.get('/', async (req, res) => {

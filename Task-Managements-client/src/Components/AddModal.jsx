@@ -5,7 +5,7 @@ import axios from "axios";
 
 const AddModal = () => {
     const { user } = useAuth()
-    const { register, handleSubmit } = useForm()
+    const { register, handleSubmit,reset } = useForm()
     const onsubmit = (data) => {
         const taskInfo = {
             ...data,
@@ -15,7 +15,8 @@ const AddModal = () => {
         }
         axios.post(`http://localhost:5050/task`, taskInfo)
             .then(res => {
-                console.log(res.data);
+                reset()
+                document.getElementById('addTask').close()
             })
 
     }

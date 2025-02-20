@@ -30,7 +30,7 @@ const SingUp = () => {
                 image: imgLink
             }
             const res = await axios.post('http://localhost:5050/user', userInfo)
-            console.log(res.data);
+       
             navigate('/myTask')
             setLoading(false)
         } catch (error) {

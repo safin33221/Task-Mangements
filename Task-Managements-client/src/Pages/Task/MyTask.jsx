@@ -1,40 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import AddModal from '../../Components/AddModal';
-
-const initialTasks = [
-    { id: '1', content: 'Buy groceries' },
-    { id: '2', content: 'Finish React project' },
-    { id: '3', content: 'Call the bank for account inquiry' },
-    { id: '4', content: 'Schedule a dentist appointment' },
-    { id: '5', content: 'Read 20 pages of a book' },
-    { id: '6', content: 'Clean the workspace' },
-    { id: '7', content: 'Reply to important emails' },
-    { id: '8', content: 'Workout for 30 minutes' },
-    { id: '9', content: 'Plan weekend trip' },
-    { id: '10', content: 'Update resume' },
-];
-
-const columnsFromBackend = {
-    todo: {
-        name: 'To Do',
-        items: initialTasks,
-    },
-    inProgress: {
-        name: 'In Progress',
-        items: [],
-    },
-    completed: {
-        name: 'Completed',
-        items: [],
-    },
-};
+import { useQuery } from '@tanstack/react-query';
+import useAuth from '../../Hooks/useAuth';
+import axios from 'axios';
+import { FaEdit } from 'react-icons/fa';
+import { MdDeleteSweep } from "react-icons/md";
+import { MdOutlineStart } from "react-icons/md";
 
 const MyTask = () => {
+    const { user } = useAuth();
+    const { data: tasks = [], refetch } = useQuery({
+        queryKey: ['task', user?.email],
+        queryFn: async () => {
+            const res = await axios.get(`http://localhost:5050/task/${user?.email}`);
+            return res.data;
+        }
+    });
+
+    const columnsFromBackend = {
+        todo: {
+            name: 'To Do',
+            items: tasks,
+        },
+        inProgress: {
+            name: 'In Progress',
+            items: [],
+        },
+        completed: {
+            name: 'Completed',
+            items: [],
+        },
+    };
+
     const [columns, setColumns] = useState(columnsFromBackend);
 
+    useEffect(() => {
+        setColumns({
+            todo: {
+                name: 'To Do',
+                items: tasks,
+            },
+            inProgress: {
+                name: 'In Progress',
+                items: [],
+            },
+            completed: {
+                name: 'Completed',
+                items: [],
+            },
+        });
+    }, [tasks]);
+
     const onDragEnd = (result) => {
-        console.log(result); // Debugging log
         if (!result.destination) return;
 
         const { source, destination } = result;
@@ -62,8 +80,10 @@ const MyTask = () => {
         });
     };
 
+    
+
     return (
-        <div >
+        <div>
             <div>
                 <button onClick={() => document.getElementById('addTask').showModal()} className="btn">Add Task</button>
             </div>
@@ -77,21 +97,34 @@ const MyTask = () => {
                                     <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
-                                        className={`p-2 min-h-[150px] rounded ${snapshot.isDraggingOver ? 'bg-blue-200' : 'bg-white'
-                                            }`}
+                                        className={`p-2 min-h-[150px] rounded ${snapshot.isDraggingOver ? 'bg-blue-200' : 'bg-white'}`}
                                     >
-                                        {column.items.map((item, index) => (
-                                            <Draggable key={item.id} draggableId={item.id} index={index}>
+                                        {Array.isArray(column.items) && column.items.map((item, index) => (
+                                            <Draggable key={item._id} draggableId={item._id} index={index}>
                                                 {(provided, snapshot) => (
                                                     <div
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        className={`border flex gap-2 border-gray-400 p-2 mb-2 bg-white shadow-sm cursor-move ${snapshot.isDragging ? 'opacity-50' : 'opacity-100'
-                                                            }`}
+                                                        className={`border  border-gray-400 p-2 mb-2 bg-white shadow-sm cursor-move ${snapshot.isDragging ? 'opacity-50' : 'opacity-100'}`}
                                                     >
-                                                        <h1> {index + 1}.</h1>
-                                                        <h1> {item.content}</h1>
+                                                        <div className='flex gap-2 justify-between'>
+                                                            <p>{item.date}</p>
+                                                            <div className='flex gap-3 text-xl'>
+                                                                <button><MdOutlineStart /></button>
+                                                                <button><FaEdit /></button>
+                                                                <button onClick={() => handleDelete(item._id)}><MdDeleteSweep /></button>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <div className='flex gap-2'>
+                                                                <h1>{index + 1}.</h1>
+                                                                <h1 className='font-bold'>{item.title}</h1>
+                                                            </div>
+                                                            <div>
+                                                                <p>{item.description.slice(0, 50)}</p>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </Draggable>
@@ -104,8 +137,7 @@ const MyTask = () => {
                     ))}
                 </DragDropContext>
             </div>
-            <AddModal />
-
+            <AddModal refetch={refetch} />
         </div>
     );
 };

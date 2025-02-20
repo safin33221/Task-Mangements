@@ -11,7 +11,7 @@ const Navbar = () => {
                 navigate('/')
             })
     }
-    console.log(user?.photoURL);
+
     return (
         <div className="navbar bg-base-100 px-16 mx-auto shadow-xl fixed top-0 w-full">
             <div className="flex-1">
