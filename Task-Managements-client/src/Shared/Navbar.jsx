@@ -11,6 +11,7 @@ const Navbar = () => {
                 navigate('/')
             })
     }
+    console.log(user?.photoURL);
     return (
         <div className="navbar bg-base-100 px-16 mx-auto shadow-xl fixed top-0 w-full">
             <div className="flex-1">
@@ -33,7 +34,7 @@ const Navbar = () => {
                                 <div className="w-10 rounded-full">
                                     <img
                                         alt="Tailwind CSS Navbar component"
-                                        src={user?.photoURl} />
+                                        src={user?.photoURL} />
                                 </div>
                             </div>
                             <ul
