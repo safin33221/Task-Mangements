@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
 import { imageUpload } from '../../Utils/Utils';
+import axios from 'axios';
 const SingUp = () => {
     const { createUserWithEmail, updateUserProfile } = useAuth()
     const [showPass, setShowPass] = useState(false)
@@ -23,6 +24,13 @@ const SingUp = () => {
             const imgLink = await imageUpload(data.image[0])
             const result = await createUserWithEmail(data?.email, data?.password)
             await updateUserProfile(data?.name, imgLink)
+            const userInfo = {
+                name: data?.name,
+                email: data?.email,
+                image: imgLink
+            }
+            const res = await axios.post('http://localhost:5050/user', userInfo)
+            console.log(res.data);
             navigate('/myTask')
             setLoading(false)
         } catch (error) {

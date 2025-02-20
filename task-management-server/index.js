@@ -31,7 +31,19 @@ async function run() {
         const userCollection = db.collection('users')
 
 
-        
+        //-------------------------Manage User--------------------
+        app.post('/user', async (req, res) => {
+            const data = req.body
+            const email = data.email
+
+            const isexist = await userCollection.findOne({ email })
+            if (isexist) return res.status(404).send({ message: 'User Alreasy stroed in db' })
+            const result = await userCollection.insertOne(data)
+            res.send(result)
+        })
+
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");

@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
 import { LuLoaderPinwheel } from "react-icons/lu";
+import axios from 'axios';
 const SingIn = () => {
     const { signInUser, GoogleLogin } = useAuth()
     const [showPass, setShowPass] = useState(false)
@@ -19,8 +20,17 @@ const SingIn = () => {
     }
     const handleGoogleSignIn = () => {
         GoogleLogin()
-            .then(() => {
-                navigate('/myTask')
+            .then((res) => {
+                const userInfo = {
+                    name: res.user.displayName,
+                    email: res.user.email,
+                    image: res.user.photoURL
+                }
+                axios.post('http://localhost:5050/user', userInfo)
+                    .then(res => {
+                        console.log(res.data);
+                    })
+                // navigate('/myTask')
             })
     }
     return (
