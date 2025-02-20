@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, onAuthStateChanged, updateCurrentUser, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updateCurrentUser, updateProfile } from 'firebase/auth';
 import React, { Children, createContext, useEffect, useState } from 'react';
 import { auth } from '../Firebase/firebase.config';
 import { set } from 'react-hook-form';
@@ -13,11 +13,15 @@ const Authprovider = ({ children }) => {
         return createUserWithEmailAndPassword(auth, email, password)
     }
 
-    const updateUserProfile =  (name, image) => {
-        return  updateProfile(auth.currentUser, {
+    const updateUserProfile = (name, image) => {
+        return updateProfile(auth.currentUser, {
             displayName: name,
             photoURL: image
         })
+    }
+    const signInUser = (email, password) => {
+        setLoading(true)
+        return signInWithEmailAndPassword(auth, email, password)
     }
     useEffect(() => {
         const unsubcribe = onAuthStateChanged(auth, (currentUser) => {
@@ -30,8 +34,10 @@ const Authprovider = ({ children }) => {
     }, [])
 
     const authVelue = {
+        user,
         createUserWithEmail,
-        updateUserProfile
+        updateUserProfile,
+        signInUser
     }
     return (
         <authContext.Provider value={authVelue}>
