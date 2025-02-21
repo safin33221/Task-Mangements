@@ -1,16 +1,28 @@
-require('dotenv').config()
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const port = process.env.PORT || 5050
+require('dotenv').config();
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-app.use(cors())
-app.use(express.json())
+const port = process.env.PORT || 5050;
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:5173', // Allow requests from this origin
+        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+        allowedHeaders: ['Content-Type'],
+    }
+});
 
-const uri = "";
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow requests from this origin
+    methods: ['GET', 'POST', 'PATCH', 'DELETE',"PUT"],
+    allowedHeaders: ['Content-Type'],
+}));
+app.use(express.json());
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(process.env.uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -21,77 +33,79 @@ const client = new MongoClient(process.env.uri, {
 
 async function run() {
     try {
-        // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
+        await client.connect();
 
-        const db = client.db('Task-management')
-        const userCollection = db.collection('users')
-        const taskCollection = db.collection('allTask')
+        const db = client.db('Task-management');
+        const userCollection = db.collection('users');
+        const taskCollection = db.collection('allTask');
 
         //-------------------------Manage User--------------------
         app.post('/user', async (req, res) => {
-            const data = req.body
-            const email = data.email
+            const data = req.body;
+            const email = data.email;
 
-            const isexist = await userCollection.findOne({ email })
-            if (isexist) return res.status(404).send({ message: 'User Alreasy stroed in db' })
-            const result = await userCollection.insertOne(data)
-            res.send(result)
-        })
+            const isexist = await userCollection.findOne({ email });
+            if (isexist) return res.status(404).send({ message: 'User Already stored in db' });
+            const result = await userCollection.insertOne(data);
+            res.send(result);
+        });
 
-        //----------------------------Mange Task------------------------------------  
-
+        //----------------------------Manage Task------------------------------------
         app.post('/task', async (req, res) => {
-            const data = req.body
-            const result = await taskCollection.insertOne(data)
-            res.send(result)
-        })
+            const data = req.body;
+            const result = await taskCollection.insertOne(data);
+            res.send(result);
+        });
 
         app.get('/task/:email', async (req, res) => {
-            const email = req.params.email
-            const result = await taskCollection.find({ email }).toArray()
-            res.send(result)
-
-        })
+            const email = req.params.email;
+            const result = await taskCollection.find({ email }).toArray();
+            res.send(result);
+        });
 
         app.patch('/task/update/:id', async (req, res) => {
-            const id = req.params.id
-            const data = req.body
-            console.log(data);
-            const query = { _id: new ObjectId(id) }
+            const id = req.params.id;
+            const data = req.body;
+            const query = { _id: new ObjectId(id) };
             const updateDoc = {
                 $set: {
                     date: data.date,
                     description: data.description,
                     email: data.email,
-                    title: data.title
-
+                    title: data.title,
+                    status: data.status
                 }
+            };
+            const result = await taskCollection.updateOne(query, updateDoc);
+            res.send(result);
+        });
 
-            }
-            const result = await taskCollection.updateOne(query, updateDoc)
-            res.send(result)
-        })
-
-        app.patch('/update-category/:id', async (req, res) => {
-            const id = req.params.id
-            const data = req.body
-       
-            const query = { _id: new ObjectId(id) }
+        app.put('/update-category/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const query = { _id: new ObjectId(id) };
             const updateDoc = {
                 $set: {
                     status: data.category
                 }
-            }
-            const result = await taskCollection.updateOne(query, updateDoc)
-            res.send(result)
-        })
+            };
+            const result = await taskCollection.updateOne(query, updateDoc);
+            res.send(result);
+        });
+
         app.delete('/delete-task/:id', async (req, res) => {
-            const id = req.params.id
-            const query = { _id: new ObjectId(id) }
-            const result = await taskCollection.deleteOne(query)
-            res.send(result)
-        })
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await taskCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        // MongoDB Change Stream
+        const changeStream = taskCollection.watch();
+        changeStream.on('change', (change) => {
+            console.log('Change detected:', change);
+            io.emit('taskChange', change);  
+        });
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
@@ -103,10 +117,17 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get('/', async (req, res) => {
-    res.send('Task Management server is running')
-})
+io.on('connection', (socket) => {
+    console.log('New client connected');
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
 
-app.listen(port, () => {
+app.get('/', async (req, res) => {
+    res.send('Task Management server is running');
+});
+
+server.listen(port, () => {
     console.log("server running on", port);
-})
+});

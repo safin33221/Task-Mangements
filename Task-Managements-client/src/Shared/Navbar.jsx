@@ -22,7 +22,7 @@ const Navbar = () => {
                     <ul className="menu menu-horizontal px-4 gap-3">
                         <li><NavLink to='/'>Home</NavLink></li>
                         {
-                            user && <li><NavLink to='/myTask'>My Task</NavLink></li>
+                            user && <li><NavLink to='/myTask'>Manage  Task</NavLink></li>
                         }
                     </ul>
                 </div>
