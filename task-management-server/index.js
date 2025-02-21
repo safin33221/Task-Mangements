@@ -3,18 +3,10 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const port = process.env.PORT || 5050
-const http = require('http');
-const { Server } = require('socket.io');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-
-const server = http.createServer(app);
-const io = new Server(server);
 
 app.use(cors())
 app.use(express.json())
-
-
-
 
 const uri = "";
 
@@ -36,7 +28,6 @@ async function run() {
         const userCollection = db.collection('users')
         const taskCollection = db.collection('allTask')
 
-
         //-------------------------Manage User--------------------
         app.post('/user', async (req, res) => {
             const data = req.body
@@ -47,12 +38,6 @@ async function run() {
             const result = await userCollection.insertOne(data)
             res.send(result)
         })
-        // MongoDB Change Stream
-        const changeStream = taskCollection.watch();
-        changeStream.on('change', (change) => {
-            console.log('Change detected:', change);
-            io.emit('taskChange', change);
-        });
 
         //----------------------------Mange Task------------------------------------  
 
@@ -87,14 +72,26 @@ async function run() {
             const result = await taskCollection.updateOne(query, updateDoc)
             res.send(result)
         })
+
+        app.patch('/update-category/:id', async (req, res) => {
+            const id = req.params.id
+            const data = req.body
+       
+            const query = { _id: new ObjectId(id) }
+            const updateDoc = {
+                $set: {
+                    status: data.category
+                }
+            }
+            const result = await taskCollection.updateOne(query, updateDoc)
+            res.send(result)
+        })
         app.delete('/delete-task/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
             const result = await taskCollection.deleteOne(query)
             res.send(result)
         })
-
-
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
@@ -105,14 +102,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
-io.on('connection', (socket) => {
-    console.log('New client connected');
-    socket.on('disconnect', () => {
-        console.log('Client disconnected');
-    });
-});
-
 
 app.get('/', async (req, res) => {
     res.send('Task Management server is running')

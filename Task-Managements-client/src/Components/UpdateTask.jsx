@@ -5,7 +5,14 @@ import { useForm } from 'react-hook-form';
 const UpdateTask = ({ updateItem, refetch }) => {
     const handleSubmit = e => {
         e.preventDefault()
+
         const form = e.target
+        if (form.title.value.length > 50) {
+            return console.log("length must be less then 50 chart");
+        }
+        if (form.description.value.length > 200) {
+            return console.log("length must be less then 200 chart");
+        }
         const updateInfo = {
             ...updateItem,
             title: form.title.value,

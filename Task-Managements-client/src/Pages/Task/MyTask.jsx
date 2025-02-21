@@ -11,8 +11,8 @@ import UpdateTask from '../../Components/UpdateTask';
 
 const MyTask = () => {
     const { user } = useAuth();
-    const [updateItem, setUpdateItem] = useState({})
-    const { data: tasks , refetch } = useQuery({
+    const [updateItem, setUpdateItem] = useState({});
+    const { data: tasks = [], refetch } = useQuery({
         queryKey: ['task', user?.email],
         queryFn: async () => {
             const res = await axios.get(`http://localhost:5050/task/${user?.email}`);
@@ -20,55 +20,27 @@ const MyTask = () => {
         }
     });
 
-    console.log(updateItem);
-    const handleDelete = id => {
-        axios.delete(`http://localhost:5050/delete-task/${id}`)
-            .then(res => {
-                console.log(res.data);
-                refetch()
-            })
-    }
-
-    const handleUpdate = item => {
-        setUpdateItem(item)
-        document.getElementById('updateTask').showModal()
-        
-    }
-
-
-
-    const columnsFromBackend = {
-        todo: {
-            name: 'To Do',
-            items: tasks,
-        },
-        inProgress: {
-            name: 'In Progress',
-            items: [],
-        },
-        completed: {
-            name: 'Completed',
-            items: [],
-        },
-    };
-
-    const [columns, setColumns] = useState(columnsFromBackend);
-
-    useEffect(() => {
-        setColumns({
+    const categorizeTasks = (tasks) => {
+        return {
             todo: {
                 name: 'To Do',
-                items: tasks,
+                items: tasks.filter(task => task.status === 'todo'),
             },
             inProgress: {
                 name: 'In Progress',
-                items: [],
+                items: tasks.filter(task => task.status === 'progress'),
             },
             completed: {
                 name: 'Completed',
-                items: [],
+                items: tasks.filter(task => task.status === 'completed'),
             },
-        });
+        };
+    };
+
+    const [columns, setColumns] = useState(categorizeTasks(tasks));
+
+    useEffect(() => {
+        setColumns(categorizeTasks(tasks));
     }, [tasks]);
 
     const onDragEnd = (result) => {
@@ -99,6 +71,24 @@ const MyTask = () => {
         });
     };
 
+    const handleDelete = id => {
+        axios.delete(`http://localhost:5050/delete-task/${id}`)
+            .then(res => {
+                console.log(res.data);
+                refetch();
+            });
+    };
+    const handleUpdateCategroy = (category, id) => {
+
+        axios.patch(`http://localhost:5050/update-category/${id}`, {category})
+            .then(() => {
+                refetch()
+            })
+    }
+    const handleUpdate = item => {
+        setUpdateItem(item);
+        document.getElementById('updateTask').showModal();
+    };
 
     return (
         <div>
@@ -129,7 +119,12 @@ const MyTask = () => {
                                                         <div className='flex gap-2 justify-between'>
                                                             <p>{item.date}</p>
                                                             <div className='flex gap-3 text-xl'>
-                                                                <button><MdOutlineStart /></button>
+                                                                <select onChange={(e) => handleUpdateCategroy(e.target.value, item._id)} defaultValue={item.status} className="select select-bordered select-sm w-full max-w-xs">
+
+                                                                    <option value='todo'>To Do</option>
+                                                                    <option value='progress'>In Progress</option>
+                                                                    <option value='completed'>Completed</option>
+                                                                </select>
                                                                 <button onClick={() => handleUpdate(item)}><FaEdit /></button>
                                                                 <button onClick={() => handleDelete(item._id)}><MdDeleteSweep /></button>
                                                             </div>
@@ -156,7 +151,7 @@ const MyTask = () => {
                 </DragDropContext>
             </div>
             <AddModal refetch={refetch} />
-            <UpdateTask updateItem={updateItem} refetch={refetch}/>
+            <UpdateTask updateItem={updateItem} refetch={refetch} />
         </div>
     );
 };
