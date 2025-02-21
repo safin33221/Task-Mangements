@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import useAuth from "../Hooks/useAuth";
 import axios from "axios";
 
-const AddModal = () => {
+const AddModal = ({refetch}) => {
     const { user } = useAuth()
     const { register, handleSubmit,reset } = useForm()
     const onsubmit = (data) => {
@@ -15,6 +15,7 @@ const AddModal = () => {
         }
         axios.post(`http://localhost:5050/task`, taskInfo)
             .then(res => {
+                refetch()
                 reset()
                 document.getElementById('addTask').close()
             })
@@ -25,7 +26,7 @@ const AddModal = () => {
 
         < dialog id="addTask" className="modal modal-bottom sm:modal-middle" >
             <div className="modal-box">
-                <h3 className="font-bold text-lg">Hello!</h3>
+                <h3 className="font-bold text-lg">Add New Task</h3>
                 <div>
                     <form onSubmit={handleSubmit(onsubmit)}>
                         <label className="input input-bordered flex items-center gap-2 mb-4">

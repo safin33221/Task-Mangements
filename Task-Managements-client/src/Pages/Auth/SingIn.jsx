@@ -21,6 +21,7 @@ const SingIn = () => {
     const handleGoogleSignIn = () => {
         GoogleLogin()
             .then((res) => {
+                navigate('/myTask')
                 const userInfo = {
                     name: res.user.displayName,
                     email: res.user.email,
@@ -39,7 +40,7 @@ const SingIn = () => {
             <form onSubmit={handleSubmit(onsubmit)} >
                 <div className="max-w-xl mx-auto border shadow-2xl rounded-lg p-4">
                     <h1 className="text-3xl font-bold text-center py-5">SignIN Now!</h1>
-        
+
 
 
                     <label className="input input-bordered flex items-center gap-2 mb-4">
@@ -77,7 +78,7 @@ const SingIn = () => {
                         }</button>
                     </label>
                     <p>Already have an Account? <Link to='/signUp' className="text-blue-800">Sign In Now</Link></p>
-                    <button
+                    <button type='button'
                         onClick={handleGoogleSignIn}
                         className='btn my-4 mx-auto w-full'
                     >

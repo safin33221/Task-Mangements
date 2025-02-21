@@ -7,10 +7,12 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdDeleteSweep } from "react-icons/md";
 import { MdOutlineStart } from "react-icons/md";
+import UpdateTask from '../../Components/UpdateTask';
 
 const MyTask = () => {
     const { user } = useAuth();
-    const { data: tasks = [], refetch } = useQuery({
+    const [updateItem, setUpdateItem] = useState({})
+    const { data: tasks , refetch } = useQuery({
         queryKey: ['task', user?.email],
         queryFn: async () => {
             const res = await axios.get(`http://localhost:5050/task/${user?.email}`);
@@ -18,7 +20,7 @@ const MyTask = () => {
         }
     });
 
-
+    console.log(updateItem);
     const handleDelete = id => {
         axios.delete(`http://localhost:5050/delete-task/${id}`)
             .then(res => {
@@ -27,8 +29,14 @@ const MyTask = () => {
             })
     }
 
+    const handleUpdate = item => {
+        setUpdateItem(item)
+        document.getElementById('updateTask').showModal()
+        
+    }
 
-    
+
+
     const columnsFromBackend = {
         todo: {
             name: 'To Do',
@@ -91,7 +99,7 @@ const MyTask = () => {
         });
     };
 
-    
+
     return (
         <div>
             <div>
@@ -122,11 +130,11 @@ const MyTask = () => {
                                                             <p>{item.date}</p>
                                                             <div className='flex gap-3 text-xl'>
                                                                 <button><MdOutlineStart /></button>
-                                                                <button><FaEdit /></button>
+                                                                <button onClick={() => handleUpdate(item)}><FaEdit /></button>
                                                                 <button onClick={() => handleDelete(item._id)}><MdDeleteSweep /></button>
                                                             </div>
                                                         </div>
-                                                        <div>
+                                                        <div className='text-left'>
                                                             <div className='flex gap-2'>
                                                                 <h1>{index + 1}.</h1>
                                                                 <h1 className='font-bold'>{item.title}</h1>
@@ -148,6 +156,7 @@ const MyTask = () => {
                 </DragDropContext>
             </div>
             <AddModal refetch={refetch} />
+            <UpdateTask updateItem={updateItem} refetch={refetch}/>
         </div>
     );
 };

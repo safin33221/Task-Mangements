@@ -66,10 +66,30 @@ async function run() {
             const email = req.params.email
             const result = await taskCollection.find({ email }).toArray()
             res.send(result)
+
+        })
+
+        app.patch('/task/update/:id', async (req, res) => {
+            const id = req.params.id
+            const data = req.body
+            console.log(data);
+            const query = { _id: new ObjectId(id) }
+            const updateDoc = {
+                $set: {
+                    date: data.date,
+                    description: data.description,
+                    email: data.email,
+                    title: data.title
+
+                }
+
+            }
+            const result = await taskCollection.updateOne(query, updateDoc)
+            res.send(result)
         })
         app.delete('/delete-task/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await taskCollection.deleteOne(query)
             res.send(result)
         })
