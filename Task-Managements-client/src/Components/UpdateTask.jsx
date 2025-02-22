@@ -15,6 +15,7 @@ const UpdateTask = ({ updateItem, refetch }) => {
         }
         const updateInfo = {
             ...updateItem,
+            status: form.status.value,
             title: form.title.value,
             description: form.description.value
         }
@@ -25,12 +26,17 @@ const UpdateTask = ({ updateItem, refetch }) => {
             })
     }
 
+    const handleClose = () => {
+        document.getElementById('updateTask4').reset()
+
+    }
+
     return (
         < dialog id="updateTask" className="modal modal-bottom sm:modal-middle" >
             <div className="modal-box">
                 <h3 className="font-bold text-lg">Update!</h3>
                 <div>
-                    <form onSubmit={handleSubmit}>
+                    <form id='updateTask4' onSubmit={handleSubmit}>
                         <label className="input input-bordered flex items-center gap-2 mb-4">
 
                             <input name='title' defaultValue={updateItem.title} required type="text" className="w-full focus::outline-none" placeholder="Title" />
@@ -39,10 +45,15 @@ const UpdateTask = ({ updateItem, refetch }) => {
 
                             <textarea name='description' rows={5} cols={100} defaultValue={updateItem.description} required type="text" className=" focus:outline-none focus-within:border-none" placeholder="Description" />
                         </label>
-                        <button className="btn w-full font-bold">Add</button>
+                        <select name='status' defaultValue={updateItem.status} className="select select-bordered select-sm w-full ">
+                            <option value='todo'>To Do</option>
+                            <option value='inProgress'>In Progress</option>
+                            <option value='completed'>Completed</option>
+                        </select>
+                        <button className="btn w-full font-bold my-4">Update</button>
                     </form>
                 </div>
-                <div className="modal-action">
+                <div onClick={handleClose} className="modal-action">
                     <form method="dialog">
                         {/* if there is a button in form, it will close the modal */}
                         <button className="btn ">Close</button>

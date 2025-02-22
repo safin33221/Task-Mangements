@@ -29,7 +29,6 @@ const AddModal = ({ refetch }) => {
         }
         const taskInfo = {
             ...data,
-            status: 'todo',
             date: moment().format('lll'),
             email: user?.email
 
