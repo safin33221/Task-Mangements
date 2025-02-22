@@ -29,7 +29,7 @@ const SingUp = () => {
                 email: data?.email,
                 image: imgLink
             }
-            const res = await axios.post('http://localhost:5050/user', userInfo)
+            const res = await axios.post('https://task-management-server-three-flax.vercel.app/user', userInfo)
        
             navigate('/myTask')
             setLoading(false)

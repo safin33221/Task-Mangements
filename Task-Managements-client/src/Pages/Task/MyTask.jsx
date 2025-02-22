@@ -4,20 +4,17 @@ import AddModal from '../../Components/AddModal';
 import { useQuery } from '@tanstack/react-query';
 import useAuth from '../../Hooks/useAuth';
 import axios from 'axios';
-import io from 'socket.io-client';
 import { FaEdit } from 'react-icons/fa';
 import { MdDeleteSweep } from "react-icons/md";
 import UpdateTask from '../../Components/UpdateTask';
 
-const socket = io('http://localhost:5050');
-
 const MyTask = () => {
     const { user } = useAuth();
     const [updateItem, setUpdateItem] = useState({});
-    const { data: tasks = [], refetch,isPending } = useQuery({
+    const { data: tasks = [], refetch, isPending } = useQuery({
         queryKey: ['task', user?.email],
         queryFn: async () => {
-            const res = await axios.get(`http://localhost:5050/task/${user?.email}`);
+            const res = await axios.get(`https://task-management-server-three-flax.vercel.app/task/${user?.email}`);
             return res.data;
         }
     });
@@ -38,31 +35,20 @@ const MyTask = () => {
         };
     };
     const [columns, setColumns] = useState(categorizeTasks(tasks));
-    
-    
+
     useEffect(() => {
         setColumns(categorizeTasks(tasks));
-
     }, [tasks]);
 
-    useEffect(() => { 
-        socket.on('taskChange', (change) => {
-            refetch();
-            console.log('Task change detected:', change);
-        });
-
-        refetch()
-
-        return () => {
-            socket.off('taskChange');
-        };
-    }, [refetch()]);
+    useEffect(() => {
+        refetch();
+    }, [refetch]);
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
-        
+
         const { source, destination } = result;
-        
+
         setColumns((prev) => {
             const sourceColumn = prev[source.droppableId];
             const destColumn = prev[destination.droppableId];
@@ -71,13 +57,10 @@ const MyTask = () => {
 
             const [removed] = sourceItems.splice(source.index, 1);
             destItems.splice(destination.index, 0, removed);
-            
-          
-            axios.put(`http://localhost:5050/update-category/${removed._id}`, { category: destination.droppableId })
-      
 
+            axios.put(`https://task-management-server-three-flax.vercel.app/update-category/${removed._id}`, { category: destination.droppableId });
 
-                return {
+            return {
                 ...prev,
                 [source.droppableId]: {
                     ...sourceColumn,
@@ -89,35 +72,35 @@ const MyTask = () => {
                 },
             };
         });
-
     };
 
     const handleDelete = id => {
-        axios.delete(`http://localhost:5050/delete-task/${id}`)
+        axios.delete(`https://task-management-server-three-flax.vercel.app/delete-task/${id}`)
             .then(res => {
                 console.log(res.data);
                 refetch();
             });
     };
-    
+
     const handleUpdate = item => {
         setUpdateItem(item);
         document.getElementById('updateTask').showModal();
     };
+
     const handleUpdateCategroy = (category, id) => {
-        axios.put(`http://localhost:5050/update-category/${id}`, { category })
+        axios.put(`https://task-management-server-three-flax.vercel.app/update-category/${id}`, { category })
             .then(() => {
-                refetch()
-            })
-    }
-    
-    if(isPending) return <h1>loading</h1>
+                refetch();
+            });
+    };
+
+    if (isPending) return <h1>loading</h1>;
     return (
         <div>
             <div>
                 <button onClick={() => document.getElementById('addTask').showModal()} className="btn">Add Task</button>
             </div>
-            <div className="grid grid-cols-3 gap-5 p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-5">
                 <DragDropContext onDragEnd={onDragEnd}>
                     {Object.entries(columns).map(([columnId, column]) => (
                         <div key={columnId} className="border-2 text-center p-3 bg-gray-100 shadow-md">

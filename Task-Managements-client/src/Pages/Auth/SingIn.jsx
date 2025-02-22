@@ -27,7 +27,7 @@ const SingIn = () => {
                     email: res.user.email,
                     image: res.user.photoURL
                 }
-                axios.post('http://localhost:5050/user', userInfo)
+                axios.post('https://task-management-server-three-flax.vercel.app/user', userInfo)
                     .then(res => {
                         console.log(res.data);
                     })

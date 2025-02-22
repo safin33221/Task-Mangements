@@ -21,7 +21,7 @@ const AddModal = ({ refetch }) => {
             email: user?.email
 
         }
-        axios.post(`http://localhost:5050/task`, taskInfo)
+        axios.post(`https://task-management-server-three-flax.vercel.app/task`, taskInfo)
             .then(res => {
                 refetch()
                 reset()

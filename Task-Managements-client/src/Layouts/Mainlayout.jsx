@@ -8,7 +8,7 @@ const Mainlayout = () => {
             <nav>
                 <Navbar />
             </nav>
-            <main className="mt-20 px-20 mx-auto">
+            <main className="mt-20 md:px-20 mx-auto">
                 <Outlet />
             </main>
     
