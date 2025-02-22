@@ -7,6 +7,7 @@ import axios from 'axios';
 import { FaEdit } from 'react-icons/fa';
 import { MdDeleteSweep } from "react-icons/md";
 import UpdateTask from '../../Components/UpdateTask';
+import { LuLoaderPinwheel } from 'react-icons/lu';
 
 const MyTask = () => {
     const { user } = useAuth();
@@ -58,7 +59,10 @@ const MyTask = () => {
             const [removed] = sourceItems.splice(source.index, 1);
             destItems.splice(destination.index, 0, removed);
 
-            axios.put(`https://task-management-server-three-flax.vercel.app/update-category/${removed._id}`, { category: destination.droppableId });
+            axios.put(`https://task-management-server-three-flax.vercel.app/update-category/${removed._id}`, { category: destination.droppableId })
+                .then(res => {
+                    refetch()
+                })
 
             return {
                 ...prev,
@@ -94,10 +98,10 @@ const MyTask = () => {
             });
     };
 
-    if (isPending) return <h1>loading</h1>;
+    if (isPending) return <div className="min-h-screen flex items-center justify-center"><LuLoaderPinwheel className="text-4xl animate-spin" /></div>
     return (
         <div>
-            <div>
+            <div className='flex items-center justify-center pt-10'>
                 <button onClick={() => document.getElementById('addTask').showModal()} className="btn">Add Task</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-5">
@@ -121,16 +125,16 @@ const MyTask = () => {
                                                         {...provided.dragHandleProps}
                                                         className={`border  border-gray-400 p-2 mb-2 bg-white shadow-sm cursor-move ${snapshot.isDragging ? 'opacity-50' : 'opacity-100'}`}
                                                     >
-                                                        <div className='flex gap-2 justify-between'>
-                                                            <p>{item.date}</p>
+                                                        <div className='flex flex-col-reverse gap-2 justify-between'>
+                                                            <p className='tabs-xs'>{item.date}</p>
                                                             <div className='flex gap-3 text-xl'>
-                                                                <select onChange={(e) => handleUpdateCategroy(e.target.value, item._id)} defaultValue={item.status} className="select select-bordered select-sm w-full max-w-xs">
+                                                                <select onChange={(e) => handleUpdateCategroy(e.target.value, item._id)} defaultValue={item.status} className="select select-bordered select-sm w-full ">
                                                                     <option value='todo'>To Do</option>
                                                                     <option value='inProgress'>In Progress</option>
                                                                     <option value='completed'>Completed</option>
                                                                 </select>
-                                                                <button onClick={() => handleUpdate(item)}><FaEdit /></button>
-                                                                <button onClick={() => handleDelete(item._id)}><MdDeleteSweep /></button>
+                                                                <button onClick={() => handleUpdate(item)}><FaEdit className='text-green-400' /></button>
+                                                                <button onClick={() => handleDelete(item._id)}><MdDeleteSweep className='text-red-500' /></button>
                                                             </div>
                                                         </div>
                                                         <div className='text-left'>

@@ -6,7 +6,7 @@ import { auth } from '../Firebase/firebase.config';
 export const authContext = createContext(null)
 
 const Authprovider = ({ children }) => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
     const googleProvider = new GoogleAuthProvider()
     const createUserWithEmail = (email, password) => {
@@ -35,6 +35,7 @@ const Authprovider = ({ children }) => {
         const unsubcribe = onAuthStateChanged(auth, (currentUser) => {
             console.log(currentUser);
             setUser(currentUser)
+            setLoading(false)
         })
         return () => {
             unsubcribe()
@@ -43,6 +44,7 @@ const Authprovider = ({ children }) => {
 
     const authVelue = {
         user,
+        loading,
         createUserWithEmail,
         updateUserProfile,
         signInUser,

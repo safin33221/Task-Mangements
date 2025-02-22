@@ -4,6 +4,7 @@ import Home from "../Pages/Home/Home";
 import SingUp from "../Pages/Auth/SingUp";
 import SingIn from "../Pages/Auth/SingIn";
 import MyTask from "../Pages/Task/MyTask";
+import PrivetRoute from "./PrivetRoute";
 
 
 const Router = () => {
@@ -14,7 +15,11 @@ const Router = () => {
                     <Route index element={<Home />}></Route>
                     <Route path="/signUp" element={<SingUp />}></Route>
                     <Route path="/signIn" element={<SingIn />}></Route>
-                    <Route path="/myTask" element={<MyTask />}></Route>
+                    <Route path="/myTask" element={
+                        <PrivetRoute>
+                            <MyTask />
+                        </PrivetRoute>
+                    }></Route>
                 </Route>
 
             </Routes>

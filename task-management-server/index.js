@@ -2,14 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const http = require('http');
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const port = process.env.PORT || 5050;
-const server = http.createServer(app);
+
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow requests from this origin
+    origin: ['http://localhost:5173',
+        'https://task-managments.web.app'
+    ], // Allow requests from this origin
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
     allowedHeaders: ['Content-Type'],
 }));
@@ -26,7 +28,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        await client.connect();
+        // await client.connect();
 
         const db = client.db('Task-management');
         const userCollection = db.collection('users');
@@ -108,6 +110,6 @@ app.get('/', async (req, res) => {
     res.send('Task Management server is running');
 });
 
-server.listen(port, () => {
+app.listen(port, () => {
     console.log("server running on", port);
 });

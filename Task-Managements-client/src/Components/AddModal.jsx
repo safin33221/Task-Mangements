@@ -2,6 +2,7 @@ import moment from "moment/moment";
 import { useForm } from "react-hook-form";
 import useAuth from "../Hooks/useAuth";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const AddModal = ({ refetch }) => {
     const { user } = useAuth()
@@ -9,10 +10,22 @@ const AddModal = ({ refetch }) => {
     const onsubmit = (data) => {
 
         if (data.title.length > 50) {
-            return console.log("length must be less then 50 chart");
+            return Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Tilte length must be less then 50 cheracter",
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
         if (data.description.length > 200) {
-            return console.log("length must be less then 200 chart");
+            return Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Description length must be less then 50 cheracter",
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
         const taskInfo = {
             ...data,
@@ -46,7 +59,12 @@ const AddModal = ({ refetch }) => {
 
                             <textarea rows={5} cols={100} {...register("description")} required type="text" className=" focus:outline-none focus-within:border-none" placeholder="Description" />
                         </label>
-                        <button className="btn">Add</button>
+                        <select {...register('status')} className="select select-bordered select-sm w-full ">
+                            <option value='todo'>To Do</option>
+                            <option value='inProgress'>In Progress</option>
+                            <option value='completed'>Completed</option>
+                        </select>
+                        <button className="btn my-4 w-full font-bold">Add</button>
                     </form>
                 </div>
                 <div className="modal-action">
