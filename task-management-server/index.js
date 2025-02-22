@@ -59,7 +59,7 @@ async function run() {
             res.send(result);
         });
 
-        app.patch('/task/update/:id', async (req, res) => {
+        app.patch('/tasks/:id', async (req, res) => {
             const id = req.params.id;
             const data = req.body;
             const query = { _id: new ObjectId(id) };
@@ -76,7 +76,7 @@ async function run() {
             res.send(result);
         });
 
-        app.put('/update-category/:id', async (req, res) => {
+        app.put('/tasks/:id', async (req, res) => {
             const id = req.params.id;
             const data = req.body;
             const query = { _id: new ObjectId(id) };

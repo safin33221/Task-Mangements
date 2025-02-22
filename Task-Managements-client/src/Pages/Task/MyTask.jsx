@@ -59,7 +59,7 @@ const MyTask = () => {
             const [removed] = sourceItems.splice(source.index, 1);
             destItems.splice(destination.index, 0, removed);
 
-            axios.put(`https://task-management-server-three-flax.vercel.app/update-category/${removed._id}`, { category: destination.droppableId })
+            axios.put(`https://task-management-server-three-flax.vercel.app/tasks/${removed._id}`, { category: destination.droppableId })
                 .then(res => {
                     refetch()
                 })
@@ -92,7 +92,7 @@ const MyTask = () => {
     };
 
     const handleUpdateCategroy = (category, id) => {
-        axios.put(`https://task-management-server-three-flax.vercel.app/update-category/${id}`, { category })
+        axios.put(`https://task-management-server-three-flax.vercel.app/tasks/${id}`, { category })
             .then(() => {
                 refetch();
             });
@@ -137,13 +137,13 @@ const MyTask = () => {
                                                                 <button onClick={() => handleDelete(item._id)}><MdDeleteSweep className='text-red-500' /></button>
                                                             </div>
                                                         </div>
-                                                        <div className='text-left'>
+                                                        <div className='text-left '>
                                                             <div className='flex gap-2'>
                                                                 <h1>{index + 1}.</h1>
                                                                 <h1 className='font-bold'>{item.title}</h1>
                                                             </div>
                                                             <div>
-                                                                <p>{item.description.slice(0, 50)}</p>
+                                                                <p className='text-xs'>{item.description}</p>
                                                             </div>
                                                         </div>
                                                     </div>

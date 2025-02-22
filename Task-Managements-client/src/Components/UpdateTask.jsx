@@ -19,7 +19,7 @@ const UpdateTask = ({ updateItem, refetch }) => {
             title: form.title.value,
             description: form.description.value
         }
-        axios.patch(`https://task-management-server-three-flax.vercel.app/task/Update/${updateItem._id}`, updateInfo)
+        axios.patch(`https://task-management-server-three-flax.vercel.app/tasks/${updateItem._id}`, updateInfo)
             .then(res => {
                 refetch()
                 document.getElementById('updateTask').close()

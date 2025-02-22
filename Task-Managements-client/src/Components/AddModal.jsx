@@ -51,7 +51,7 @@ const AddModal = ({ refetch }) => {
                     <form onSubmit={handleSubmit(onsubmit)}>
                         <label className="input input-bordered flex items-center gap-2 mb-4">
 
-                            <input {...register("title")} required type="text" className=" focus::outline-none" placeholder="Title" />
+                            <input {...register("title")} required type="text" className=" w-full focus::outline-none" placeholder="Title" />
                         </label>
 
                         <label className="textarea textarea-bordered focus:outline-none focus:border-none flex items-center gap-2 mb-4">
